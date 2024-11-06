@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .message {
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="form-title">Login</h2>
+    <form id="auth-form" onsubmit="handleSubmit(event)">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+    <div class="toggle">
+        <span>Don't have an account? <a href="#" id="toggle-form">Sign Up</a></span>
+    </div>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    const authForm = document.getElementById('auth-form');
+    const formTitle = document.getElementById('form-title');
+    const toggleForm = document.getElementById('toggle-form');
+    const message = document.getElementById('message');
+
+    toggleForm.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isLogin = formTitle.textContent === 'Login';
+        formTitle.textContent = isLogin ? 'Sign Up' : 'Login';
+        authForm.querySelector('button').textContent = isLogin ? 'Sign Up' : 'Login';
+        authForm.reset();
+        message.textContent = '';
+    });
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const isLogin = formTitle.textContent === 'Login';
+
+        if (isLogin) {
+            login(username, password);
+        } else {
+            signUp(username, password);
+        }
+    }
+
+    function signUp(username, password) {
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        
+        if (users[username]) {
+            message.textContent = 'Username already exists!';
+            return;
+        }
+
+        users[username] = password;
+        localStorage.setItem('users', JSON.stringify(users));
+        message.textContent = 'Sign up successful! You can now log in.';
+        authForm.reset();
+        toggleForm.click(); // Switch to login form
+    }
+
+    function login(username, password) {
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+
+        if (users[username] && users[username] === password) {
+            message.textContent = `Welcome back, ${username}!`;
+        } else {
+            message.textContent = 'Invalid username or password!';
+        }
+    }
+</script>
+
+</body>
+</html>
